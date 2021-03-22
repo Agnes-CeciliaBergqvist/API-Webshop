@@ -37,12 +37,17 @@ class UserWebshop {
             die();  
         }
 
+        $password = $_POST['password']; 
+        $salt1 = "AfGsaö2";
+        $salt2 = "Hasf&6";
+        $krypt_password = md5($salt2.$password.$salt1);
+
         try {
             $sql = "INSERT INTO users (username, email, password) VALUES (:username_IN, :email_IN, :password_IN)";
             $statement = $this->db_connection->prepare($sql); 
             $statement->bindParam(":username_IN", $username_IN); 
             $statement->bindParam(":email_IN", $user_email_IN); 
-            $statement->bindParam(":password_IN", $user_password_IN); 
+            $statement->bindParam(":password_IN", $krypt_password); 
 
         } catch(PDOException $error_message) {
             echo $error_message->getMessage(); 
