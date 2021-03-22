@@ -18,9 +18,12 @@ CREATE TABLE cart (cartId INT NOT NULL PRIMARY KEY AUTO_INCREMENT, productId INT
 All functions are written with big letters. 
 Using try and catch for every sql questions 
 
+OBS!!! SE TILL SÅ DU FÖLJER REGLER MED print_r och return!! 
+
 
 ERROR CODES
 ------
 001 = All arguments need a value "CreateUser" 
 002 = All arguments need a value "AddProduct" 
-003 = No ID specified, enter the ID that you want to delete "deleteProduct"
+003 = No ID specified, enter the ID that you want to delete "deleteProduct", "getProduct"
+004 = Product dosent exsist! "GetProduct"

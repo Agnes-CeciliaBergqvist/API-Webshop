@@ -144,6 +144,35 @@ class UserWebshop {
      }
 
 
+     function GetAllProducts() {
+         $sql = "SELECT * FROM products"; 
+         $statement = $this->db_connection->prepare($sql); 
+         $statement->execute();
+         return $statement->fetchAll(); 
+     }
+
+     function GetProduct($product_id) {
+         $sql = "SELECT productId, productName, description, price FROM products WHERE productId=:product_id_IN";
+         $statement = $this->db_connection->prepare($sql); 
+         $statement->bindParam(":product_id_IN", $product_id);
+
+         if ( !$statement->execute()) {
+             $error = new stdClass();
+             $error->message = "Product dosent exsist!"; 
+             $error->code = "004"; 
+             print_r(json_encode($error)); 
+             die(); 
+         }
+         $row = $statement->fetch(); 
+
+         $this->product_id = $row['productId']; 
+         $this->product_name = $row['productName']; 
+         $this->product_description = $row['description']; 
+
+         return $row; 
+     }
+
+
 
 
 }
