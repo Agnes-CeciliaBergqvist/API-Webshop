@@ -23,3 +23,4 @@ ERROR CODES
 ------
 001 = All arguments need a value "CreateUser" 
 002 = All arguments need a value "AddProduct" 
+003 = No ID specified, enter the ID that you want to delete "deleteProduct"

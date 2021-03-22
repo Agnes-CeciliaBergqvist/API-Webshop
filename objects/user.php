@@ -26,14 +26,14 @@ class UserWebshop {
         $statement->bindParam(":email_IN", $user_email_IN); 
 
         if (!$statement->execute()) {
-            echo "Could not execute query 'CreateUser', please try again"; 
+            echo "Could not execute query 'CreateUser', please try again!"; 
             die(); 
         }
 
         //Counts and checks if there is a user with the same username or password. 
         $count_rows = $statement->rowCount();
         if($count_rows > 0) {
-            echo "The username or email already exists";
+            echo "The username or email already exists!";
             die();  
         }
 
@@ -49,7 +49,7 @@ class UserWebshop {
         }
 
         if (!$statement->execute()) {
-            echo "Could not create user, try again"; 
+            echo "Could not create user, try again!"; 
             die(); 
         }
         $this->username = $username_IN; 
@@ -60,7 +60,7 @@ class UserWebshop {
 
     } else {
         $error = new stdClass();
-        $error->message = "All arguments need a value"; 
+        $error->message = "All arguments need a value!"; 
         $error->code = "001"; 
         print_r(json_encode($error)); 
         die();  
@@ -78,14 +78,14 @@ class UserWebshop {
         //$statement->bindParam(":price_IN", $product_price_IN); 
 
         if (!$statement->execute()) {
-            echo "Could not execute query 'AddProduct', please try again"; 
+            echo "Could not execute query 'AddProduct', please try again!"; 
             die(); 
         }
 
         //Counts and checks if there is a product with the same productname. 
         $count_rows = $statement->rowCount();
         if($count_rows > 0) {
-            echo "The product already exists";
+            echo "The product already exists!";
             die();  
         }
 
@@ -101,7 +101,7 @@ class UserWebshop {
         }
 
         if (!$statement->execute()) {
-            echo "Could not create product, try again"; 
+            echo "Could not create product, try again!"; 
             die(); 
         }
         $this->productName = $product_name_IN; 
@@ -112,7 +112,7 @@ class UserWebshop {
 
     } else {
         $error = new stdClass();
-        $error->message = "All arguments need a value"; 
+        $error->message = "All arguments need a value!"; 
         $error->code = "002"; 
         print_r(json_encode($error)); 
         die();  
@@ -120,6 +120,23 @@ class UserWebshop {
     }
 
 }
+
+    function DeleteProduct($product_id) {
+        $sql = "DELETE FROM products WHERE productId=:product_id_IN"; 
+        $statement = $this->db_connection->prepare($sql); 
+        $statement->bindParam("product_id_IN", $product_id); 
+        $statement->execute(); 
+
+        $message = new stdClass(); 
+        if ($statement->rowCount() > 0 ) {
+            $message->text = "Product with productID: $product_id is deleted!";
+            return $message;  
+
+        }
+        $message->return = "Error, no product with productID: $product_id exsists."; 
+        return $message; 
+        
+     }
 
 
 
