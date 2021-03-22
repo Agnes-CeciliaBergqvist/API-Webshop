@@ -7,6 +7,10 @@ class UserWebshop {
     private $username; 
     private $user_email; 
     private $user_password; 
+    private $product_id; 
+    private $product_name; 
+    private $product_description; 
+    private $product_price; 
 
     
     function __construct($db) {
@@ -51,13 +55,65 @@ class UserWebshop {
         $this->username = $username_IN; 
         $this->email = $user_email_IN; 
 
-        echo "User successfully created! Username: $this->username Email: $this->user_email"; 
+        echo "User successfully created!<br/> Username: $this->username Email: $this->email"; 
         die(); 
 
     } else {
         $error = new stdClass();
         $error->message = "All arguments need a value"; 
         $error->code = "001"; 
+        print_r(json_encode($error)); 
+        die();  
+
+    }
+}
+
+    function AddProduct($product_name_IN, $product_description_IN, $product_price_IN) {
+        if (!empty($product_name_IN) && !empty($product_description_IN)) {
+            
+        $sql = "SELECT productId FROM products WHERE productName=:productName_IN OR description=:description_IN"; 
+        $statement = $this->db_connection->prepare($sql); 
+        $statement->bindParam(":productName_IN", $product_name_IN); 
+        $statement->bindParam(":description_IN", $product_description_IN); 
+        //$statement->bindParam(":price_IN", $product_price_IN); 
+
+        if (!$statement->execute()) {
+            echo "Could not execute query 'AddProduct', please try again"; 
+            die(); 
+        }
+
+        //Counts and checks if there is a product with the same productname. 
+        $count_rows = $statement->rowCount();
+        if($count_rows > 0) {
+            echo "The product already exists";
+            die();  
+        }
+
+        try {
+            $sql = "INSERT INTO products (productName, description, price) VALUES (:productName_IN, :description_IN, :price_IN)";
+            $statement = $this->db_connection->prepare($sql); 
+            $statement->bindParam(":productName_IN", $product_name_IN); 
+            $statement->bindParam(":description_IN", $product_description_IN); 
+            $statement->bindParam(":price_IN", $product_price_IN); 
+
+        } catch(PDOException $error_message) {
+            echo $error_message->getMessage(); 
+        }
+
+        if (!$statement->execute()) {
+            echo "Could not create product, try again"; 
+            die(); 
+        }
+        $this->productName = $product_name_IN; 
+        $this->price = $product_price_IN; 
+
+        echo "Product successfully created!<br/> Product Name: $this->productName Price: $this->price"; 
+        die(); 
+
+    } else {
+        $error = new stdClass();
+        $error->message = "All arguments need a value"; 
+        $error->code = "002"; 
         print_r(json_encode($error)); 
         die();  
 
