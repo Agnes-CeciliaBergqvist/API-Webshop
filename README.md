@@ -13,3 +13,12 @@ CREATE TABLE users (userId INT NOT NULL PRIMARY KEY AUTO_INCREMENT, username VAR
 CREATE TABLE products (productId INT NOT NULL PRIMARY KEY AUTO_INCREMENT, productName VARCHAR(400)) ENGINE = InnoDB; 
 CREATE TABLE cart (cartId INT NOT NULL PRIMARY KEY AUTO_INCREMENT, productId INT NOT NULL,  CONSTRAINT FKproductsId FOREIGN KEY(productId) REFERENCES products(productId)) ENGINE = InnoDB; 
 
+
+***********
+All functions are written with big letters. 
+Using try and catch for every sql questions 
+
+
+ERROR CODE
+------
+001 = All arguments need a value
