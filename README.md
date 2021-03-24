@@ -28,3 +28,11 @@ ERROR CODES
 003 = No ID specified, enter the ID that you want to delete "deleteProduct", "getProduct"
 004 = Product dosent exsist! "GetProduct"
 400 =  Bad Request
+
+
+
+{
+"REST_API by: ": "Agnes-Cecilia Bergqvist",
+"Github": "https://github.com/Agnes-CeciliaBergqvist",
+"Contact": "agnes-cecilia.bergqvist@medieinstitutet.se"
+}
