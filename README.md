@@ -1,4 +1,4 @@
-# API-Webshop
+# REST API-Webshop
 
 SQL-question to create the database 
 
@@ -27,3 +27,4 @@ ERROR CODES
 002 = All arguments need a value "AddProduct" 
 003 = No ID specified, enter the ID that you want to delete "deleteProduct", "getProduct"
 004 = Product dosent exsist! "GetProduct"
+400 =  Bad Request

@@ -12,7 +12,7 @@ if ( !empty($_GET['id'])) {
 } else {
     $error = new stdClass(); 
     $error->message = "No ID specified, enter the ID that you want to delete"; 
-    $error->code = "003"; 
+    $error->code = "400"; 
     print_r(json_encode($error)); 
     die(); 
 

@@ -12,6 +12,7 @@ class UserWebshop {
     private $product_description; 
     private $product_price; 
 
+
     
     function __construct($db) {
         $this->db_connection = $db; 
@@ -63,15 +64,15 @@ class UserWebshop {
         echo "User successfully created!<br/> Username: $this->username Email: $this->email"; 
         die(); 
 
-    } else {
+        } else {
         $error = new stdClass();
         $error->message = "All arguments need a value!"; 
         $error->code = "001"; 
         print_r(json_encode($error)); 
         die();  
 
+            }
     }
-}
 
     function AddProduct($product_name_IN, $product_description_IN, $product_price_IN) {
         if (!empty($product_name_IN) && !empty($product_description_IN)) {
@@ -115,17 +116,15 @@ class UserWebshop {
         echo "Product successfully created!<br/> Product Name: $this->productName Price: $this->price"; 
         die(); 
 
-    } else {
+        } else {
         $error = new stdClass();
         $error->message = "All arguments need a value!"; 
         $error->code = "002"; 
         print_r(json_encode($error)); 
         die();  
-
+        }
     }
-
-}
-
+    
     function DeleteProduct($product_id) {
         $sql = "DELETE FROM products WHERE productId=:product_id_IN"; 
         $statement = $this->db_connection->prepare($sql); 
@@ -139,8 +138,7 @@ class UserWebshop {
 
         }
         $message->return = "Error, no product with productID: $product_id exsists."; 
-        return $message; 
-        
+        return $message;    
      }
 
 
@@ -171,6 +169,71 @@ class UserWebshop {
 
          return $row; 
      }
+
+     function UpdateProduct($product_id, $product_name = "", $product_description = "", $product_price = "") {
+        $error = new stdClass();
+
+        if ( !empty($product_name)) {
+            $error->message = $this->UpdateProductName($product_id, $product_name); 
+        }
+        if ( !empty($product_description)) {
+            $error->message = $this->UpdateProductDescription($product_id, $product_description); 
+        }
+        if ( !empty($product_price)) {
+            $error->message = $this->UpdateProductPrice($product_id, $product_price); 
+        }
+        return $error; 
+      }
+      
+      private $productName = false; 
+      private $productDescription = false;
+       
+
+      function UpdateProductName($product_id, $product_name) {
+          $sql = "UPDATE products SET productName=:product_name_IN WHERE productId=:product_id_IN";
+          $statement = $this->db_connection->prepare($sql); 
+          $statement->bindParam("product_id_IN", $product_id); 
+          $statement->bindParam("product_name_IN", $product_name); 
+          $statement->execute(); 
+
+          $statement->execute() ? $this->productName = true : false; 
+           echo $this->productDescription === true ? false : "Product with ID: $product_id is updated. "; 
+          
+          if (!$statement->execute()) {
+            echo "Product with ID: $product_id is NOT updated, please try again."; 
+        }
+      }
+
+      function UpdateProductDescription($product_id, $product_description) {
+        $sql = "UPDATE products SET description=:product_description_IN WHERE productId=:product_id_IN";
+        $statement = $this->db_connection->prepare($sql); 
+        $statement->bindParam("product_id_IN", $product_id); 
+        $statement->bindParam("product_description_IN", $product_description); 
+        $statement->execute(); 
+
+        $statement->execute() && $this->productName != true ? $this->productDescription = true : false; 
+           echo $this->productName != true ? "Product with ID: $product_id is updated." : false; 
+       
+        if (!$statement->execute()) {
+          echo "Product with ID: $product_id is NOT updated, please try again."; 
+      }
+    }
+
+    function UpdateProductPrice($product_id, $product_price) {
+        $sql = "UPDATE products SET price=:product_price_IN WHERE productId=:product_id_IN";
+        $statement = $this->db_connection->prepare($sql); 
+        $statement->bindParam("product_id_IN", $product_id); 
+        $statement->bindParam("product_price_IN", $product_price); 
+        $statement->execute(); 
+
+        echo $this->productName != true && $this->productDescription != true ? "Product with ID: $product_id is updated." : false;
+        if (!$statement->execute()) {
+          echo "Product with ID: $product_id is NOT updated, please try again."; 
+      }
+    }
+
+
+
 
 
 

@@ -3,6 +3,7 @@
 include("../../config/database_handler.php");
 include("../../objects/user.php"); 
 
+
 $product = new UserWebshop($pdo); 
 
 if ( !empty($_GET['id'])) {
