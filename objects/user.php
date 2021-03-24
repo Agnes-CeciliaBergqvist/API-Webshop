@@ -38,10 +38,10 @@ class UserWebshop {
             die();  
         }
 
-        $password = $_POST['password']; 
+        $user_password = $_POST['password']; 
         $salt1 = "AfGsaö2";
         $salt2 = "Hasf&6";
-        $krypt_password = md5($salt2.$password.$salt1);
+        $krypt_password = md5($salt2.$user_password.$salt1);
 
         try {
             $sql = "INSERT INTO users (username, email, password) VALUES (:username_IN, :email_IN, :password_IN)";
@@ -230,6 +230,38 @@ class UserWebshop {
         if (!$statement->execute()) {
           echo "Product with ID: $product_id is NOT updated, please try again."; 
       }
+    }
+
+    function LoginUser($username_IN, $user_password_IN) {
+        $sql = "SELECT userId, username, password, email FROM users WHERE username=:username_IN AND password=:password_IN"; 
+        $statement = $this->db_connection->prepare($sql); 
+        $statement->bindParam("username_IN", $username_IN); 
+        $statement->bindParam("password_IN", $user_password_IN); 
+
+        $statement->execute(); 
+        if ($statement->rowCount() == 1) {
+            $row = $statement->fetch();  
+            return $this->CreateToken($row['id'], $row['username']); 
+
+        } 
+    }
+    function CreateToken($userId, $username) {
+
+       $token = md5(time() . $userId . $username); 
+       
+
+       $sql = "INSERT INTO sessions (userId, token, last_used) VALUES(:userId_IN, :token_IN, :last_used_IN)";
+       $statement = $this->db_connection->prepare($sql); 
+       $statement->bindParam("userId_IN", $userId); 
+       $statement->bindParam("token_IN", $token); 
+       $time = time(); 
+       $statement->bindParam("last_used_IN", $time);
+       $statement->execute(); 
+
+       return $token; 
+
+
+
     }
 
 
