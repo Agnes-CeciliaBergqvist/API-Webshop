@@ -60,7 +60,7 @@ class UserWebshop {
         $this->username = $username_IN; 
         $this->email = $user_email_IN; 
 
-        echo "User successfully created!<br/> Username: $this->username Email: $this->email"; 
+        echo "User successfully created! Username: $this->username Email: $this->email"; 
         die(); 
 
         } else {
@@ -127,7 +127,7 @@ class UserWebshop {
     function DeleteProduct($product_id) {
         $sql = "DELETE FROM products WHERE productId=:product_id_IN"; 
         $statement = $this->db_connection->prepare($sql); 
-        $statement->bindParam("product_id_IN", $product_id); 
+        $statement->bindParam(":product_id_IN", $product_id); 
         $statement->execute(); 
 
         $message = new stdClass(); 
@@ -191,8 +191,8 @@ class UserWebshop {
       function UpdateProductName($product_id, $product_name) {
           $sql = "UPDATE products SET productName=:product_name_IN WHERE productId=:product_id_IN";
           $statement = $this->db_connection->prepare($sql); 
-          $statement->bindParam("product_id_IN", $product_id); 
-          $statement->bindParam("product_name_IN", $product_name); 
+          $statement->bindParam(":product_id_IN", $product_id); 
+          $statement->bindParam(":product_name_IN", $product_name); 
           $statement->execute(); 
 
           $statement->execute() ? $this->productName = true : false; 
@@ -206,8 +206,8 @@ class UserWebshop {
       function UpdateProductDescription($product_id, $product_description) {
         $sql = "UPDATE products SET description=:product_description_IN WHERE productId=:product_id_IN";
         $statement = $this->db_connection->prepare($sql); 
-        $statement->bindParam("product_id_IN", $product_id); 
-        $statement->bindParam("product_description_IN", $product_description); 
+        $statement->bindParam(":product_id_IN", $product_id); 
+        $statement->bindParam(":product_description_IN", $product_description); 
         $statement->execute(); 
 
         $statement->execute() && $this->productName != true ? $this->productDescription = true : false; 
@@ -221,8 +221,8 @@ class UserWebshop {
     function UpdateProductPrice($product_id, $product_price) {
         $sql = "UPDATE products SET price=:product_price_IN WHERE productId=:product_id_IN";
         $statement = $this->db_connection->prepare($sql); 
-        $statement->bindParam("product_id_IN", $product_id); 
-        $statement->bindParam("product_price_IN", $product_price); 
+        $statement->bindParam(":product_id_IN", $product_id); 
+        $statement->bindParam(":product_price_IN", $product_price); 
         $statement->execute(); 
 
         echo $this->productName != true && $this->productDescription != true ? "Product with ID: $product_id is updated." : false;
@@ -246,6 +246,11 @@ class UserWebshop {
      }
 
     function CreateToken($userId, $username) {
+        $checkedToken = $this->CheckToken($userId);
+        
+        if($checkedToken != false) {
+            return $checkedToken; 
+        }
 
        $token = md5(time() . $userId . $username); 
        
@@ -259,16 +264,57 @@ class UserWebshop {
        $statement->execute(); 
 
        return $token; 
+    }
 
+    function CheckToken($userId) {
+        $sql = "SELECT token, last_used FROM sessions WHERE userId=:userId_IN AND last_used > :activeTime_IN LIMIT 1";
+        $statement = $this->db_connection->prepare($sql);
+        $statement->bindParam(":userId_IN", $userId); 
 
+        $activeTime = time() - (60*60); 
+        $statement->bindParam(":activeTime_IN", $activeTime);  
+        $statement->execute(); 
+        $return = $statement->fetch(); 
 
+        if(isset($return['token'])) {
+            return $return['token']; 
+        } else{
+            return false; 
+        }
+    }
+
+    function ValidToken($token) {
+        $sql = "SELECT token, last_used FROM sessions WHERE token=:token_IN AND last_used > :activeTime_IN LIMIT 1";
+        $statement = $this->db_connection->prepare($sql);
+        $statement->bindParam(":token_IN", $token);
+        $activeTime = time() - (60*60);
+        $statement->bindParam(":activeTime_IN", $activeTime); 
+        $statement->execute();    
+        $return = $statement->fetch();
+
+        if(isset($return['token'])) {
+
+            $this->UpdateToken($return['token']);
+            return true;     
+        } else {
+            return false;
+        }
+    }
+
+    function UpdateToken($token) {
+        $sql = "UPDATE sessions SET last_used=:last_used_IN WHERE token=:token_IN";
+        $statement = $this->db_connection->prepare($sql);
+        $time = time();
+        $statement->bindParam(":last_used_IN", $time);
+        $statement->bindParam(":token_IN", $token);
+        $statement->execute();
     }
 
 
 
 
 
-    // JOIN sessions as s ON s.userId = s.userId
+    
 
 
 
