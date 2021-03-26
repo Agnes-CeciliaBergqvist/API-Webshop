@@ -10,7 +10,7 @@
 SQL-question to create the database 
 
 DROP DATABASE IF EXISTS Webshop; 
-CREATE DATABASE Webshop;
+<!-- CREATE DATABASE Webshop; -->
 
 DROP TABLE IF EXISTS sessions; 
 DROP TABLE IF EXISTS cart; 

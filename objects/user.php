@@ -11,6 +11,7 @@ class UserWebshop {
     private $product_name; 
     private $product_description; 
     private $product_price; 
+    private $user_token;  
 
 
     
@@ -38,17 +39,15 @@ class UserWebshop {
             die();  
         }
 
-        $user_password = $_POST['password']; 
-        $salt1 = "AfGsaö2";
-        $salt2 = "Hasf&6";
-        $krypt_password = md5($salt2.$user_password.$salt1);
+        $user_password = $user_password_IN; 
+        $user_password = password_hash($user_password, PASSWORD_DEFAULT);
 
         try {
             $sql = "INSERT INTO users (username, email, password) VALUES (:username_IN, :email_IN, :password_IN)";
             $statement = $this->db_connection->prepare($sql); 
             $statement->bindParam(":username_IN", $username_IN); 
             $statement->bindParam(":email_IN", $user_email_IN); 
-            $statement->bindParam(":password_IN", $krypt_password); 
+            $statement->bindParam(":password_IN", $user_password); 
 
         } catch(PDOException $error_message) {
             echo $error_message->getMessage(); 
@@ -233,18 +232,19 @@ class UserWebshop {
     }
 
     function LoginUser($username_IN, $user_password_IN) {
-        $sql = "SELECT userId, username, password, email FROM users WHERE username=:username_IN AND password=:password_IN"; 
+        $sql = "SELECT userId, username, password, email FROM users WHERE username=:username_IN"; 
         $statement = $this->db_connection->prepare($sql); 
-        $statement->bindParam("username_IN", $username_IN); 
-        $statement->bindParam("password_IN", $user_password_IN); 
-
+        $statement->bindParam(":username_IN", $username_IN); 
         $statement->execute(); 
-        if ($statement->rowCount() == 1) {
-            $row = $statement->fetch();  
-            return $this->CreateToken($row['id'], $row['username']); 
+        $row = $statement->fetch();  
+        
+        if(password_verify($user_password_IN, $row["password"])) {
+            return $this->CreateToken($row['userId'], $row['username']); 
+         } else {
+             return "fel lösenord";
+         }
+     }
 
-        } 
-    }
     function CreateToken($userId, $username) {
 
        $token = md5(time() . $userId . $username); 
@@ -252,10 +252,10 @@ class UserWebshop {
 
        $sql = "INSERT INTO sessions (userId, token, last_used) VALUES(:userId_IN, :token_IN, :last_used_IN)";
        $statement = $this->db_connection->prepare($sql); 
-       $statement->bindParam("userId_IN", $userId); 
-       $statement->bindParam("token_IN", $token); 
+       $statement->bindParam(":userId_IN", $userId); 
+       $statement->bindParam(":token_IN", $token); 
        $time = time(); 
-       $statement->bindParam("last_used_IN", $time);
+       $statement->bindParam(":last_used_IN", $time);
        $statement->execute(); 
 
        return $token; 
@@ -267,6 +267,8 @@ class UserWebshop {
 
 
 
+
+    // JOIN sessions as s ON s.userId = s.userId
 
 
 
