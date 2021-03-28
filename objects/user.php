@@ -80,7 +80,7 @@ class UserWebshop {
         $statement = $this->db_connection->prepare($sql); 
         $statement->bindParam(":productName_IN", $product_name_IN); 
         $statement->bindParam(":description_IN", $product_description_IN); 
-        //$statement->bindParam(":price_IN", $product_price_IN); 
+         
 
         if (!$statement->execute()) {
             echo "Could not execute query 'AddProduct', please try again!"; 
@@ -112,7 +112,7 @@ class UserWebshop {
         $this->productName = $product_name_IN; 
         $this->price = $product_price_IN; 
 
-        echo "Product successfully created!<br/> Product Name: $this->productName Price: $this->price"; 
+        echo "Product successfully created! Product Name: $this->productName Price: $this->price"; 
         die(); 
 
         } else {
@@ -241,7 +241,7 @@ class UserWebshop {
         if(password_verify($user_password_IN, $row["password"])) {
             return $this->CreateToken($row['userId'], $row['username']); 
          } else {
-             return "fel lösenord";
+             return "Wrong password, try again. ";
          }
      }
 
@@ -308,6 +308,21 @@ class UserWebshop {
         $statement->bindParam(":last_used_IN", $time);
         $statement->bindParam(":token_IN", $token);
         $statement->execute();
+    }
+
+    function AddProductToCart($product_id) {
+        $sql = "SELECT productId FROM cart WHERE productId=:product_id_IN";
+        $statement = $this->db_connection->prepare($sql); 
+        $statement->bindParam(":product_id_IN", $product_id);
+        $statement->execute(); 
+
+        if ($statement->execute()) {
+            return "Product added to cart"; 
+        } else {
+            return "No product added, please try again"; 
+        }
+
+
     }
 
 
