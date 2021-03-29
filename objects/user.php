@@ -310,13 +310,14 @@ class UserWebshop {
         $statement->execute();
     }
 
-    function AddProductToCart($product_id) {
-        $sql = "SELECT productId FROM cart WHERE productId=:product_id_IN";
+    function AddProductToCart($product_id, $user_id) {
+        $sql = "SELECT productId, userId FROM cart WHERE productId=:product_id_IN AND userId=:user_id_IN";
         $statement = $this->db_connection->prepare($sql); 
         $statement->bindParam(":product_id_IN", $product_id);
+        $statement->bindParam(":user_id_IN", $user_id); 
         $statement->execute(); 
 
-        if ($statement->execute()) {
+        if ($statement->execute($product_id)) {
             return "Product added to cart"; 
         } else {
             return "No product added, please try again"; 
@@ -324,6 +325,20 @@ class UserWebshop {
 
 
     }
+
+    function GetCart(){
+
+    }
+
+    function DeleteProductInCart() {
+
+    }
+
+    function DeleteCart(){
+
+    }
+
+
 
 
 
