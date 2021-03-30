@@ -310,41 +310,84 @@ class UserWebshop {
         $statement->execute();
     }
 
-    function AddProductToCart($product_id, $user_id) {
+
+    function AddProductToCart($product_id_IN, $user_id_IN) {
+        if (!empty($product_id_IN)) {
+
         $sql = "SELECT productId, userId FROM cart WHERE productId=:product_id_IN AND userId=:user_id_IN";
         $statement = $this->db_connection->prepare($sql); 
-        $statement->bindParam(":product_id_IN", $product_id);
-        $statement->bindParam(":user_id_IN", $user_id); 
+        $statement->bindParam(":product_id_IN", $product_id_IN);
+        $statement->bindParam(":user_id_IN", $user_id_IN); 
         $statement->execute(); 
 
-        if ($statement->execute($product_id)) {
-            return "Product added to cart"; 
-        } else {
-            return "No product added, please try again"; 
+        if (!$statement->execute()) {
+            echo "Could not execute query 'AddProductToCart', please try again!"; 
+            die(); 
         }
 
+        $count_rows = $statement->rowCount();
+        if($count_rows > 0) {
+            echo "The product exists in Cart already!";
+            die();  
+        }
+
+        try {
+            $sql = "INSERT INTO cart (productId, userId) VALUES (:product_id_IN, :user_id_IN)";
+            $statement = $this->db_connection->prepare($sql); 
+            $statement->bindParam(":product_id_IN", $product_id_IN);
+            $statement->bindParam(":user_id_IN", $user_id_IN); 
+
+        } catch(PDOException $error_message) {
+            echo $error_message->getMessage(); 
+        }
+
+        if (!$statement->execute()) {
+            echo "Could not add product to cart, try again!"; 
+            die(); 
+        }
+        $this->productId = $product_id_IN; 
+        $this->userId = $user_id_IN; 
+
+        echo "Product successfully added to cart! Product Id: $this->productId by user Id: $this->userId"; 
+        die(); 
+
+        } else {
+        $error = new stdClass();
+        $error->message = "All arguments need a value!"; 
+        $error->code = "002"; 
+        print_r(json_encode($error)); 
+        die();  
+        }
 
     }
+    
+
 
     function GetCart(){
-
-    }
-
-    function DeleteProductInCart() {
-
-    }
-
-    function DeleteCart(){
+        $sql = "SELECT * FROM cart"; 
+        $statement = $this->db_connection->prepare($sql); 
+        $statement->execute();
+        return $statement->fetchAll(); 
 
     }
 
 
+    function DeleteProductInCart($product_id) {
+        $sql = "DELETE FROM cart WHERE productId=:product_id_IN"; 
+        $statement = $this->db_connection->prepare($sql); 
+        $statement->bindParam(":product_id_IN", $product_id); 
+        $statement->execute(); 
 
+        $message = new stdClass(); 
+        if ($statement->rowCount() > 0 ) {
+            $message->text = "Product with productID: $product_id is deleted from cart!";
+            return $message;  
 
+        }
+        $message->return = "Error, no product with productID: $product_id exsists."; 
+        return $message; 
 
-
-
-    
+    }
 
 
 

@@ -5,6 +5,6 @@ include("../../objects/user.php");
 
 $cart = new UserWebshop($pdo); 
 
-
+$cart->AddProductToCart("1", "1"); 
 
 ?>
