@@ -19,8 +19,8 @@ DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (userId INT NOT NULL PRIMARY KEY AUTO_INCREMENT, username VARCHAR(40) NOT NULL, password VARCHAR(100) NOT NULL, email VARCHAR(150)) ENGINE = InnoDB; 
 CREATE TABLE products (productId INT NOT NULL PRIMARY KEY AUTO_INCREMENT, productName VARCHAR(200), description VARCHAR(400), price INT) ENGINE = InnoDB; 
-CREATE TABLE cart (cartId INT NOT NULL PRIMARY KEY AUTO_INCREMENT, productId INT NOT NULL, userId INT NOT NULL, CONSTRAINT FKproductsId FOREIGN KEY(productId) REFERENCES products(productId), CONSTRAINT FKproductId FOREIGN KEY(userId) REFERENCES users(userId)) ENGINE = InnoDB; 
-CREATE TABLE sessions (sessionId INT NOT NULL PRIMARY KEY AUTO_INCREMENT, userId INT NOT NULL, token text, last_used INT, CONSTRAINT FKusersId FOREIGN KEY(userId) REFERENCES users(userId)) ENGINE = InnoDB; 
+CREATE TABLE cart (cartId INT NOT NULL PRIMARY KEY AUTO_INCREMENT, productId INT NOT NULL, cartToken VARCHAR(255), CONSTRAINT FKproductsId FOREIGN KEY(productId) REFERENCES products(productId)) ENGINE = InnoDB; 
+CREATE TABLE sessions (sessionId INT NOT NULL PRIMARY KEY AUTO_INCREMENT, userId INT NOT NULL, token text, last_used DATETIME, CONSTRAINT FKusersId FOREIGN KEY(userId) REFERENCES users(userId)) ENGINE = InnoDB; 
 
 ***********
 All functions are written with big letters. 

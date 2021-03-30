@@ -250,61 +250,66 @@ class UserWebshop {
         
         if($checkedToken != false) {
             return $checkedToken; 
-        }
+        } 
 
-       $token = md5(time() . $userId . $username); 
-       
-
-       $sql = "INSERT INTO sessions (userId, token, last_used) VALUES(:userId_IN, :token_IN, :last_used_IN)";
-       $statement = $this->db_connection->prepare($sql); 
-       $statement->bindParam(":userId_IN", $userId); 
-       $statement->bindParam(":token_IN", $token); 
-       $time = time(); 
-       $statement->bindParam(":last_used_IN", $time);
-       $statement->execute(); 
-
-       return $token; 
+            $token = md5(time() . $userId . $username); 
+            
+            $sql = "INSERT INTO sessions (userId, token) 
+        VALUES(:userId_IN, :token_IN)";
+        $statement = $this->db_connection->prepare($sql); 
+        $statement->bindParam(":userId_IN", $userId); 
+        $statement->bindParam(":token_IN", $token); 
+        $statement->execute(); 
+        
+        return $token; 
     }
 
     function CheckToken($userId) {
-        $sql = "SELECT token, last_used FROM sessions WHERE userId=:userId_IN AND last_used > :activeTime_IN LIMIT 1";
+        $sql = "SELECT token, last_used FROM sessions WHERE userId=:userId_IN  
+                ORDER BY last_used DESC LIMIT 1";
         $statement = $this->db_connection->prepare($sql);
         $statement->bindParam(":userId_IN", $userId); 
-
-        $activeTime = time() - (60*60); 
-        $statement->bindParam(":activeTime_IN", $activeTime);  
         $statement->execute(); 
+
         $return = $statement->fetch(); 
 
-        if(isset($return['token'])) {
-            return $return['token']; 
-        } else{
-            return false; 
+        $last_used = strtotime($return["last_used"]);
+        $checkExpire = time() - 3600;
+        $updateOrNot = time() - 1800;
+
+        if($last_used < $updateOrNot) {
+            $this->updateToken($return["token"]);
         }
-    }
 
-    function ValidToken($token) {
-        $sql = "SELECT token, last_used FROM sessions WHERE token=:token_IN AND last_used > :activeTime_IN LIMIT 1";
-        $statement = $this->db_connection->prepare($sql);
-        $statement->bindParam(":token_IN", $token);
-        $activeTime = time() - (60*60);
-        $statement->bindParam(":activeTime_IN", $activeTime); 
-        $statement->execute();    
-        $return = $statement->fetch();
-
-        if(isset($return['token'])) {
-
-            $this->UpdateToken($return['token']);
-            return true;     
-        } else {
+        if($last_used < $checkExpire) {
             return false;
+        } else {
+            return $return["token"]; 
         }
     }
+
+    // function ValidToken($token) {
+    //     $sql = "SELECT token, last_used FROM sessions WHERE token=:token_IN AND last_used > :activeTime_IN LIMIT 1";
+    //     $statement = $this->db_connection->prepare($sql);
+    //     $statement->bindParam(":token_IN", $token);
+    //     $activeTime = time() - (60*60);
+    //     $statement->bindParam(":activeTime_IN", $activeTime); 
+    //     $statement->execute();    
+    //     $return = $statement->fetch();
+
+    //     if(isset($return['token'])) {
+
+    //         $this->UpdateToken($return['token']);
+    //         return true;     
+    //     } else {
+    //         return false;
+    //     }
+    // }
 
     function UpdateToken($token) {
-        $sql = "UPDATE sessions SET last_used=:last_used_IN WHERE token=:token_IN";
+        $sql = "UPDATE sessions SET last_used = date_add(NOW(), INTERVAL :last_used_IN SECOND) WHERE token=:token_IN";
         $statement = $this->db_connection->prepare($sql);
-        $time = time();
+        $time = 3600;
         $statement->bindParam(":last_used_IN", $time);
         $statement->bindParam(":token_IN", $token);
         $statement->execute();
@@ -360,6 +365,31 @@ class UserWebshop {
         }
 
     }
+
+    function AddProductToCart2($product_id_IN, $token) {
+        if (!empty($product_id_IN)) {
+        try {
+            $sql = "INSERT INTO cart (productId, cartToken) VALUES (:product_id_IN, :token)";
+            $statement = $this->db_connection->prepare($sql); 
+            $statement->bindParam(":product_id_IN", $product_id_IN);
+            $statement->bindParam(":token", $token); 
+
+        } catch(PDOException $error_message) {
+            echo $error_message->getMessage(); 
+        }
+
+        if (!$statement->execute()) {
+            echo "Could not add product to cart, try again!"; 
+            die(); 
+        }
+
+        $this->productId = $product_id_IN; 
+
+        echo "Product successfully added to cart! Product Id: $this->productId."; 
+        die(); 
+
+        }
+    }
     
 
 
@@ -389,6 +419,7 @@ class UserWebshop {
 
     }
 
+    
 
 
 }
