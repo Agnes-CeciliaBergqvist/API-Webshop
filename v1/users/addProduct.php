@@ -5,7 +5,7 @@ include("../../objects/user.php");
 
 
 $user = new UserWebshop($pdo);
-$user->AddProduct("Nike", "hejhej", "10000"); 
+$user->AddProduct("Marlene Birger", "Blue jeans with the perfect fit", "2995"); 
 
 
 
