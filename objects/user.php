@@ -66,7 +66,7 @@ class UserWebshop {
         } else {
         $error = new stdClass();
         $error->message = "All arguments need a value!"; 
-        $error->code = "001"; 
+        $error->code = "401"; 
         print_r(json_encode($error)); 
         die();  
 
@@ -118,7 +118,7 @@ class UserWebshop {
         } else {
         $error = new stdClass();
         $error->message = "All arguments need a value!"; 
-        $error->code = "002"; 
+        $error->code = "401"; 
         print_r(json_encode($error)); 
         die();  
         }
@@ -156,7 +156,7 @@ class UserWebshop {
          if ( !$statement->execute()) {
              $error = new stdClass();
              $error->message = "Product dosent exsist!"; 
-             $error->code = "004"; 
+             $error->code = "404"; 
              print_r(json_encode($error)); 
              die(); 
          }
@@ -272,7 +272,7 @@ class UserWebshop {
         $statement->execute(); 
 
         $return = $statement->fetch(); 
-
+         //Converts string to time
         $last_used = strtotime($return["last_used"]);
         $checkExpire = time() - 3600;
         $updateOrNot = time() - 1800;
@@ -288,23 +288,6 @@ class UserWebshop {
         }
     }
 
-    // function ValidToken($token) {
-    //     $sql = "SELECT token, last_used FROM sessions WHERE token=:token_IN AND last_used > :activeTime_IN LIMIT 1";
-    //     $statement = $this->db_connection->prepare($sql);
-    //     $statement->bindParam(":token_IN", $token);
-    //     $activeTime = time() - (60*60);
-    //     $statement->bindParam(":activeTime_IN", $activeTime); 
-    //     $statement->execute();    
-    //     $return = $statement->fetch();
-
-    //     if(isset($return['token'])) {
-
-    //         $this->UpdateToken($return['token']);
-    //         return true;     
-    //     } else {
-    //         return false;
-    //     }
-    // }
 
     function UpdateToken($token) {
         $sql = "UPDATE sessions SET last_used = date_add(NOW(), INTERVAL :last_used_IN SECOND) WHERE token=:token_IN";
@@ -359,13 +342,14 @@ class UserWebshop {
         } else {
         $error = new stdClass();
         $error->message = "All arguments need a value!"; 
-        $error->code = "002"; 
+        $error->code = "401"; 
         print_r(json_encode($error)); 
         die();  
         }
 
     }
 
+    //Function for adding a token to the product id.
     function AddProductToCart2($product_id_IN, $token) {
         if (!empty($product_id_IN)) {
         try {
@@ -391,8 +375,6 @@ class UserWebshop {
         }
     }
     
-
-
     function GetCart(){
         $sql = "SELECT * FROM cart"; 
         $statement = $this->db_connection->prepare($sql); 
@@ -400,7 +382,6 @@ class UserWebshop {
         return $statement->fetchAll(); 
 
     }
-
 
     function DeleteProductInCart($product_id) {
         $sql = "DELETE FROM cart WHERE productId=:product_id_IN"; 
