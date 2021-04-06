@@ -349,8 +349,8 @@ class UserWebshop {
 
     }
 
-    //Function for adding a token to the product id.
-    function AddProductToCart2($product_id_IN, $token) {
+    
+    function AddingTokenToCart($product_id_IN, $token) {
         if (!empty($product_id_IN)) {
         try {
             $sql = "INSERT INTO cart (productId, cartToken) VALUES (:product_id_IN, :token)";

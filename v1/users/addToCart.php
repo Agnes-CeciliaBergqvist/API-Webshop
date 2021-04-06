@@ -8,11 +8,11 @@ if(isset($_GET["productId"])) {
     if(!isset($_GET["token"])) {
         $token = md5(time()); 
         $cart = new UserWebshop($pdo); 
-        $cart->AddProductToCart2($_GET["productId"], $token); 
+        $cart->AddingTokenToCart($_GET["productId"], $token); 
     } else {
         
         $cart = new UserWebshop($pdo); 
-        $cart->AddProductToCart2($_GET["productId"], $_GET["token"]); 
+        $cart->AddingTokenToCart($_GET["productId"], $_GET["token"]); 
     }
 
 } else {
