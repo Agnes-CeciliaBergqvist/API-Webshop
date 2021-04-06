@@ -10,6 +10,7 @@ All functions are written with big letters.
 Using try and catch for every sql question.
 
 How to use: 
+----
 This API endpoints uses GET, so in order to test out the endpoints, please follow the steps below and write your information in your web browser's url bar.
 
 * You need to be logged in to be able to create and product but you dont need to be a user to add products to the cart, you can be loggend in or not, you decide. But first of all you need to create my database SQL-question that you see below.
