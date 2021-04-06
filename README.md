@@ -7,9 +7,12 @@
       }
 
 All functions are written with big letters. 
-Using try and catch for every sql question. 
+Using try and catch for every sql question.
 
-* To be able to use these endpoints you need to be logged in to be able to create and product but you dont need to be a user to add products to the cart, you can be loggend in or not, you decide. But first of all you need to create my database SQL-question that you see below.
+How to use: 
+This API endpoints uses GET, so in order to test out the endpoints, please follow the steps below and write your information in your web browser's url bar.
+
+* You need to be logged in to be able to create and product but you dont need to be a user to add products to the cart, you can be loggend in or not, you decide. But first of all you need to create my database SQL-question that you see below.
 * When the database is created you can go to V1/users -> createUser.php and create the user by entering the username, email and password. 
 * To login you will go to localhost/API-Webshop/V1/users/loginUser.php and enter the username and password that you just created. 
 * To created a new product go to V1/users -> addProduct.php and enter product name, description and price. 
